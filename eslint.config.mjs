@@ -64,6 +64,8 @@ export default defineConfig([
     "**/app.config.*",
     "**/jest.*config.js",
     "**/eslint.config.mjs",
+    // Vendored upstream UFO firmware and Node test server — not our source to lint.
+    "ufo-master/**",
   ]),
   {
     files: ["**/*.ts", "**/*.tsx"],

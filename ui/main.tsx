@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { AppRoot } from "@dynatrace/strato-components/core";
-import { BrowserRouter } from "react-router-dom";
-import { App } from "./app/App";
+import { App } from "./app";
 
-const root = ReactDOM.createRoot(document.getElementById("root")!);
-root.render(
-  <AppRoot>
-    <BrowserRouter basename="ui">
-      <App />
-    </BrowserRouter>
-  </AppRoot>
+const container = document.getElementById("root");
+if (!container) {
+  throw new Error('Root container "#root" was not found in the document.');
+}
+
+ReactDOM.createRoot(container).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
 );

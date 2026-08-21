@@ -1,0 +1,10 @@
+{
+  "host": "ufo.example",
+  "endpoint": "http://ufo.example",
+  "url": "http://ufo.example/api?top_init&top=0|5|1496ff&top_whirl=255&bottom_init&bottom=0|5|1496ff&bottom_whirl=55|ccw&logo=ffffff|ffffff|ffffff|ffffff",
+  "status": "success",
+  "responseStatus": 200,
+  "top": { "color": "#1496ff", "direction": "right", "speed": 10, "ledCount": 5 },
+  "bottom": { "color": "#1496ff", "direction": "left", "speed": 1, "ledCount": 5 },
+  "logoColor": "#ffffff"
+}

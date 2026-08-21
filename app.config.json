@@ -1,14 +1,29 @@
 {
   "$schema": "./.dt-app/app.config.schema.json",
-  "environmentUrl": "https://guu84124.apps.dynatrace.com/",
+  "environmentUrl": "https://bnk46244.apps.dynatrace.com/",
   "app": {
-    "name": "UFO",
-    "version": "0.0.0",
-    "description": "A starting project with routing, fetching data, and charting",
+    "name": "UFO Studio",
+    "version": "0.0.16",
+    "description": "Register and drive the Dynatrace UFOs on your network.",
     "id": "my.ufo",
+    "icon": "icon.svg",
+    "hidden": false,
     "scopes": [
-      { "name": "storage:logs:read", "comment": "default template" },
-      { "name": "storage:buckets:read", "comment": "default template" }
+      {
+        "name": "app-settings:objects:read",
+        "comment": "list and read UFO device settings objects"
+      },
+      {
+        "name": "app-settings:objects:write",
+        "comment": "create, update, and delete UFO device settings objects"
+      }
+    ],
+    "actions": [
+      {
+        "name": "DT_UFO",
+        "title": "Send to UFO",
+        "description": "Send LED color and animation commands to a Dynatrace UFO device"
+      }
     ]
   }
 }

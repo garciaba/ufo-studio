@@ -38,3 +38,21 @@ Thumbs.db
 # app-settings plugin local files
 /settings/local-mock-data/secrets.json
 /settings/local-mock-data/persistence/
+
+# EdgeConnect credentials (contains an OAuth client secret) — never commit
+/edgeConnect.yaml
+/edgeConnect*.yaml
+
+# Environment / secret files — never commit (keep a safe .env.example template)
+.env
+.env.*
+!.env.example
+
+# Test coverage output
+/coverage
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
