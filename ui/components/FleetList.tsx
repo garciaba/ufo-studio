@@ -9,8 +9,7 @@ import {
   useCreateSettingsV2,
   useDeleteSettingsV2,
 } from '@dynatrace-sdk/react-hooks';
-import { palette } from '../../lib/ufo/palette';
-import { RING_LED_COUNT } from '../../lib/ufo/pattern';
+import { OFF_PATTERN, palette } from '../../lib/ufo/palette';
 import type { Pattern } from '../../lib/ufo/pattern';
 import type { RenderOutcome, UfoDevice, UfoTransportKind } from '../../transport/types';
 import { createBrowserBeaconTransport } from '../../transport/browserBeacon';
@@ -122,11 +121,7 @@ const TEST_PATTERNS: readonly TestPattern[] = [
     id: 'off',
     label: 'Off',
     color: 'neutral',
-    pattern: {
-      top: { segments: [{ pos: 0, count: RING_LED_COUNT, color: palette.idle }] },
-      bottom: { segments: [{ pos: 0, count: RING_LED_COUNT, color: palette.idle }] },
-      logo: [palette.idle, palette.idle, palette.idle, palette.idle],
-    },
+    pattern: OFF_PATTERN,
   },
 ];
 

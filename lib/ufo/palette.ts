@@ -23,3 +23,14 @@ export const IDLE_PATTERN: Pattern = {
   top: { segments: [{ pos: 0, count: RING_LED_COUNT, color: palette.idle }] },
   bottom: { segments: [{ pos: 0, count: RING_LED_COUNT, color: palette.idle }] },
 };
+
+/**
+ * The "Off"/clean state: every ring LED and all four logo LEDs driven to the dim idle colour.
+ * Shared by the app's "Off" quick-test and the workflow action's "Clean UFO" button so the two
+ * stay byte-for-byte identical.
+ */
+export const OFF_PATTERN: Pattern = {
+  top: { segments: [{ pos: 0, count: RING_LED_COUNT, color: palette.idle }] },
+  bottom: { segments: [{ pos: 0, count: RING_LED_COUNT, color: palette.idle }] },
+  logo: [palette.idle, palette.idle, palette.idle, palette.idle],
+};

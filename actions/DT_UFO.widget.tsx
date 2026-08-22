@@ -14,6 +14,7 @@ import {
   type UfoCommand,
 } from '../lib/ufo/command';
 import { encodePattern } from '../lib/ufo/encode';
+import { OFF_PATTERN } from '../lib/ufo/palette';
 import { RING_LED_COUNT } from '../lib/ufo/pattern';
 
 // All fields are optional: a stored action config only carries what the author
@@ -141,6 +142,7 @@ function RingSection(props: {
 const DtUfoWidget: ActionWidget<DtUfoInput> = (props) => {
   const { value, onValueChanged } = props;
   const [testState, setTestState] = useState<TestState>({ status: 'idle' });
+  const [activeAction, setActiveAction] = useState<'test' | 'clean' | null>(null);
 
   const updateValue = (patch: Partial<DtUfoInput>) => {
     onValueChanged({ ...value, ...patch });
@@ -160,54 +162,85 @@ const DtUfoWidget: ActionWidget<DtUfoInput> = (props) => {
   };
   const logoColor = value.logoColor ?? DEFAULT_LOGO_COLOR;
 
+  // Resolve the selected device and deliver an encoded path through the `ufo-render` app function
+  // (which reaches the UFO via EdgeConnect). Shared by the Test and Clean buttons.
+  const deliver = async (
+    objectId: string,
+    path: string,
+  ): Promise<{ ok: true; host: string; status: number } | { ok: false; message: string }> => {
+    const connectionObject = await appSettingsObjectsClient.getAppSettingsObjectByObjectId({ objectId });
+    const device = (connectionObject.value ?? {}) as { host?: string; protocol?: string; port?: number };
+    if (!device.host) {
+      return { ok: false, message: 'The selected device has no host configured. Add it to the fleet first.' };
+    }
+    const request = {
+      protocol: device.protocol === 'https' ? 'https' : 'http',
+      host: device.host,
+      path,
+      ...(typeof device.port === 'number' ? { port: device.port } : {}),
+    };
+    const response = await functions.call('ufo-render', { data: request });
+    const result = (await response.json()) as {
+      outcome?: string;
+      status?: number;
+      statusText?: string;
+      error?: string;
+    };
+    if (result.outcome === 'delivered') {
+      return { ok: true, host: device.host, status: result.status ?? 200 };
+    }
+    if (result.outcome === 'device-error') {
+      return {
+        ok: false,
+        message: `The UFO rejected the command (HTTP ${result.status ?? '?'} ${result.statusText ?? ''}).`.trim(),
+      };
+    }
+    return { ok: false, message: result.error ?? 'The UFO could not be reached from Dynatrace.' };
+  };
+
   const runTest = async () => {
     if (!value.connectionId) {
       setTestState({ status: 'error', message: 'Select a UFO device first.' });
       return;
     }
+    setActiveAction('test');
     setTestState({ status: 'testing' });
     try {
-      const connectionObject = await appSettingsObjectsClient.getAppSettingsObjectByObjectId({
-        objectId: value.connectionId,
-      });
-      const device = (connectionObject.value ?? {}) as { host?: string; protocol?: string; port?: number };
-      if (!device.host) {
-        setTestState({
-          status: 'error',
-          message: 'The selected device has no host configured. Add it to the fleet first.',
-        });
-        return;
-      }
       const command: UfoCommand = { top, bottom, logoColor };
-      const path = encodePattern(buildCommandPattern(command));
-      const request = {
-        protocol: device.protocol === 'https' ? 'https' : 'http',
-        host: device.host,
-        path,
-        ...(typeof device.port === 'number' ? { port: device.port } : {}),
-      };
-      // The widget runs in the UFO app's own context, so this invokes our
-      // `ufo-render` app function, which reaches the device through EdgeConnect.
-      const response = await functions.call('ufo-render', { data: request });
-      const result = (await response.json()) as {
-        outcome?: string;
-        status?: number;
-        statusText?: string;
-        error?: string;
-      };
-      if (result.outcome === 'delivered') {
-        setTestState({ status: 'ok', message: `Delivered to ${device.host} (HTTP ${result.status ?? 200}).` });
-      } else if (result.outcome === 'device-error') {
-        setTestState({
-          status: 'error',
-          message: `The UFO rejected the command (HTTP ${result.status ?? '?'} ${result.statusText ?? ''}).`.trim(),
-        });
-      } else {
-        setTestState({ status: 'error', message: result.error ?? 'The UFO could not be reached from Dynatrace.' });
-      }
+      const result = await deliver(value.connectionId, encodePattern(buildCommandPattern(command)));
+      setTestState(
+        result.ok
+          ? { status: 'ok', message: `Delivered to ${result.host} (HTTP ${result.status}).` }
+          : { status: 'error', message: result.message },
+      );
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       setTestState({ status: 'error', message: `Test failed: ${message}` });
+    } finally {
+      setActiveAction(null);
+    }
+  };
+
+  const runClean = async () => {
+    if (!value.connectionId) {
+      setTestState({ status: 'error', message: 'Select a UFO device first.' });
+      return;
+    }
+    setActiveAction('clean');
+    setTestState({ status: 'testing' });
+    try {
+      // Send the same "Off" pattern as the app's quick-test: every LED to the dim idle colour.
+      const result = await deliver(value.connectionId, encodePattern(OFF_PATTERN));
+      setTestState(
+        result.ok
+          ? { status: 'ok', message: `Cleared ${result.host} (HTTP ${result.status}).` }
+          : { status: 'error', message: result.message },
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setTestState({ status: 'error', message: `Clean failed: ${message}` });
+    } finally {
+      setActiveAction(null);
     }
   };
 
@@ -256,16 +289,28 @@ const DtUfoWidget: ActionWidget<DtUfoInput> = (props) => {
       </Flex>
 
       <Flex flexDirection="column" gap={4} alignItems="flex-start">
-        <Button
-          variant="emphasized"
-          color="primary"
-          disabled={testState.status === 'testing' || !value.connectionId}
-          onClick={() => {
-            void runTest();
-          }}
-        >
-          {testState.status === 'testing' ? 'Testing...' : 'Test on UFO'}
-        </Button>
+        <Flex gap={8} alignItems="center">
+          <Button
+            variant="emphasized"
+            color="primary"
+            disabled={activeAction !== null || !value.connectionId}
+            onClick={() => {
+              void runTest();
+            }}
+          >
+            {activeAction === 'test' ? 'Testing...' : 'Test on UFO'}
+          </Button>
+          <Button
+            variant="default"
+            color="neutral"
+            disabled={activeAction !== null || !value.connectionId}
+            onClick={() => {
+              void runClean();
+            }}
+          >
+            {activeAction === 'clean' ? 'Cleaning...' : 'Clean UFO'}
+          </Button>
+        </Flex>
         {testState.message ? <Text>{testState.message}</Text> : null}
       </Flex>
     </Flex>
