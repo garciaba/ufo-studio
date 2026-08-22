@@ -62,10 +62,6 @@ export function createEdgeConnectTransport(device: UfoDevice): UfoTransport {
     kind: 'edge-connect',
 
     async render(pattern: Pattern): Promise<RenderOutcome> {
-      if (!device.enabled) {
-        return { attempted: false, skipped: 'disabled' };
-      }
-
       let encodedPath: string;
       try {
         encodedPath = encodePattern(pattern);
@@ -120,9 +116,6 @@ export function createEdgeConnectTransport(device: UfoDevice): UfoTransport {
     },
 
     async readInfo(): Promise<InfoResult> {
-      if (!device.enabled) {
-        return { supported: false, reason: `${device.displayName} is disabled.` };
-      }
       let result: UfoProxyResult;
       try {
         result = await callProxy(proxyRequest(device, '/info'));

@@ -32,12 +32,16 @@ export type UfoDevice = {
   readonly organization?: string;
   readonly department?: string;
   readonly location?: string;
-  /** Disabled devices are shown but never receive renders. */
-  readonly enabled: boolean;
+  /**
+   * Legacy field kept only for backward compatibility with existing settings objects and the
+   * `ufo-device` schema's non-nullable `enabled` property. Devices are no longer enabled or
+   * disabled — connectivity is determined at runtime — so nothing reads this any more.
+   */
+  readonly enabled?: boolean;
 };
 
 /** Why a render was intentionally not dispatched (a non-error outcome). */
-export type RenderSkipReason = 'disabled' | 'unchanged' | 'rate-limited';
+export type RenderSkipReason = 'unchanged' | 'rate-limited';
 
 /**
  * The result of asking a transport to render a pattern. A resolved `render()` with

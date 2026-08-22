@@ -16,6 +16,8 @@ import type { RenderOutcome, UfoDevice, UfoTransportKind } from '../../transport
 import { createBrowserBeaconTransport } from '../../transport/browserBeacon';
 import { createEdgeConnectTransport } from '../../transport/edgeConnect';
 import { AddDeviceModal, type NewDeviceInput } from './AddDeviceModal';
+import { UfoLedIcon } from './UfoLedIcon';
+import { useUfoConnectivity, type ConnectivityStatus } from './useUfoConnectivity';
 
 const SCHEMA_ID = 'ufo-device';
 
@@ -176,8 +178,6 @@ function describeOutcome(
     return { tone: 'critical', message: `Could not deliver "${label}" to ${name}: ${outcome.error}.${hint}` };
   }
   switch (outcome.skipped) {
-    case 'disabled':
-      return { tone: 'warning', message: `${name} is disabled — nothing was sent.` };
     case 'unchanged':
       return { tone: 'info', message: `${name} already shows "${label}" — nothing re-sent.` };
     case 'rate-limited':
@@ -212,17 +212,22 @@ function endpointOf(device: DeviceRow): string {
 }
 
 /**
- * One UFO rendered as a card: name, endpoint, a connected/disconnected status chip, its metadata as
- * key/value chips, and the quick-test + remove actions in the footer.
+ * One UFO rendered as a card: an LED glyph mirroring its last-applied pattern, its name, endpoint, a
+ * live connection status chip, its metadata as key/value chips, and the quick-test + remove actions
+ * in the footer.
  */
 function UfoCard({
   device,
   busy,
+  status,
+  appliedPattern,
   onTest,
   onRemove,
 }: {
   readonly device: DeviceRow;
   readonly busy: boolean;
+  readonly status: ConnectivityStatus;
+  readonly appliedPattern?: Pattern;
   readonly onTest: (device: DeviceRow, pattern: Pattern, label: string) => void;
   readonly onRemove: (device: DeviceRow) => void;
 }): React.ReactElement {
@@ -232,39 +237,49 @@ function UfoCard({
     <Surface elevation="raised" padding={16}>
       <Flex flexDirection="column" gap={12}>
         <Flex justifyContent="space-between" alignItems="flex-start" gap={8}>
-          <Flex flexDirection="column" gap={2}>
-            <Heading level={3}>{device.displayName}</Heading>
-            <Text textStyle="small">{endpointOf(device)}</Text>
+          <Flex alignItems="center" gap={12}>
+            <UfoLedIcon pattern={appliedPattern} dimmed={status !== 'connected'} size={44} />
+            <Flex flexDirection="column" gap={2}>
+              <Heading level={3}>{device.displayName}</Heading>
+              <Text textStyle="small">{endpointOf(device)}</Text>
+            </Flex>
           </Flex>
-          <Chip color={device.enabled ? 'success' : 'neutral'} variant="accent">
-            {device.enabled ? 'Connected' : 'Disconnected'}
+          <Chip
+            color={
+              status === 'connected' ? 'success' : status === 'disconnected' ? 'critical' : 'neutral'
+            }
+            variant="accent"
+          >
+            {status === 'connected'
+              ? 'Connected'
+              : status === 'disconnected'
+                ? 'Not Connected'
+                : 'Checking…'}
           </Chip>
         </Flex>
 
-        <Flex flexWrap="wrap" gap={4}>
-          <Chip>
-            <Chip.Key>protocol</Chip.Key>
-            {device.protocol}
-          </Chip>
-          {device.organization ? (
-            <Chip>
-              <Chip.Key>org</Chip.Key>
-              {device.organization}
-            </Chip>
-          ) : null}
-          {device.department ? (
-            <Chip>
-              <Chip.Key>dept</Chip.Key>
-              {device.department}
-            </Chip>
-          ) : null}
-          {device.location ? (
-            <Chip>
-              <Chip.Key>site</Chip.Key>
-              {device.location}
-            </Chip>
-          ) : null}
-        </Flex>
+        {device.organization || device.department || device.location ? (
+          <Flex flexWrap="wrap" gap={4}>
+            {device.organization ? (
+              <Chip>
+                <Chip.Key>org</Chip.Key>
+                {device.organization}
+              </Chip>
+            ) : null}
+            {device.department ? (
+              <Chip>
+                <Chip.Key>dept</Chip.Key>
+                {device.department}
+              </Chip>
+            ) : null}
+            {device.location ? (
+              <Chip>
+                <Chip.Key>site</Chip.Key>
+                {device.location}
+              </Chip>
+            ) : null}
+          </Flex>
+        ) : null}
 
         <Divider />
 
@@ -275,7 +290,7 @@ function UfoCard({
               <Select
                 name={`test-pattern-${device.objectId}`}
                 value={selectedTest}
-                disabled={busy || !device.enabled}
+                disabled={busy}
                 onChange={(next) => setSelectedTest(next)}
               >
                 <Select.Trigger placeholder="Select pattern" width="150px" />
@@ -292,7 +307,7 @@ function UfoCard({
               variant="accent"
               color="primary"
               size="condensed"
-              disabled={busy || !device.enabled || !selectedTest}
+              disabled={busy || !selectedTest}
               onClick={() => {
                 if (selectedTest) {
                   onTest(device, selectedTest.pattern, selectedTest.label);
@@ -330,6 +345,8 @@ export function FleetList() {
   const [addSubmitting, setAddSubmitting] = useState(false);
   const [busyDeviceId, setBusyDeviceId] = useState<string | null>(null);
   const [notice, setNotice] = useState<ActionNotice | null>(null);
+  // Last pattern this app pushed to each device, keyed by deviceId — drives the card LED glyph.
+  const [appliedById, setAppliedById] = useState<Record<string, Pattern>>({});
 
   const rows = useMemo<DeviceRow[]>(() => {
     const items = data?.items ?? [];
@@ -358,7 +375,6 @@ export function FleetList() {
         displayName,
         host,
         protocol: value.protocol === 'https' ? 'https' : 'http',
-        enabled: value.enabled !== false,
         ...(typeof value.port === 'number' ? { port: value.port } : {}),
         ...(typeof value.organization === 'string' ? { organization: value.organization } : {}),
         ...(typeof value.department === 'string' ? { department: value.department } : {}),
@@ -368,16 +384,29 @@ export function FleetList() {
     return result;
   }, [data]);
 
+  const connectivityById = useUfoConnectivity(rows);
+
   const handleSendPattern = useCallback(
     async (device: DeviceRow, pattern: Pattern, label: string) => {
       setBusyDeviceId(device.deviceId);
-      setNotice(null);
       try {
         const { outcome, via } = await deliverPattern(device, pattern);
-        setNotice(describeOutcome(outcome, device.displayName, label, via));
+        // Mirror the pattern on the card's LED glyph whenever we actually dispatched (or delivered) it.
+        if (outcome.attempted || outcome.delivered) {
+          setAppliedById((prev) => ({ ...prev, [device.deviceId]: pattern }));
+        }
+        // Quick-test feedback goes to the browser console only, never the UI. Failures log as errors.
+        const note = describeOutcome(outcome, device.displayName, label, via);
+        const line = `[UFO] ${note.message}`;
+        if (note.tone === 'critical') {
+          console.error(line);
+        } else if (note.tone === 'warning') {
+          console.warn(line);
+        } else {
+          console.info(line);
+        }
       } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        setNotice({ tone: 'critical', message: `Could not send to ${device.displayName}: ${message}` });
+        console.error(`[UFO] Could not send "${label}" to ${device.displayName}:`, err);
       } finally {
         setBusyDeviceId(null);
       }
@@ -414,7 +443,8 @@ export function FleetList() {
       setAddError(undefined);
       setAddSubmitting(true);
       try {
-        const value: UfoDevice = { deviceId: crypto.randomUUID(), ...input };
+        // `enabled` is a legacy, non-nullable schema field; set it true so older readers stay happy.
+        const value: UfoDevice = { deviceId: crypto.randomUUID(), enabled: true, ...input };
         await createSettings.execute({ body: { schemaId: SCHEMA_ID, value } });
         await refetch();
         setShowAdd(false);
@@ -477,6 +507,8 @@ export function FleetList() {
               key={device.deviceId}
               device={device}
               busy={busyDeviceId === device.deviceId}
+              status={connectivityById[device.deviceId] ?? 'checking'}
+              appliedPattern={appliedById[device.deviceId]}
               onTest={(d, pattern, label) => {
                 void handleSendPattern(d, pattern, label);
               }}

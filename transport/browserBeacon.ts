@@ -42,10 +42,6 @@ export function createBrowserBeaconTransport(device: UfoDevice): UfoTransport {
     kind: 'browser-beacon',
 
     async render(pattern: Pattern): Promise<RenderOutcome> {
-      if (!device.enabled) {
-        return { attempted: false, skipped: 'disabled' };
-      }
-
       // Encode first (may reject an invalid or oversized pattern). Kept total: an
       // encode failure is reported, not thrown, so callers have one code path.
       let encodedPath: string;

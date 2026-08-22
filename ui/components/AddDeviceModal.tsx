@@ -34,7 +34,6 @@ export function AddDeviceModal({
   const [organization, setOrganization] = useState('');
   const [department, setDepartment] = useState('');
   const [location, setLocation] = useState('');
-  const [enabled, setEnabled] = useState(true);
 
   const trimmedName = displayName.trim();
   const trimmedHost = host.trim();
@@ -55,7 +54,6 @@ export function AddDeviceModal({
     setOrganization('');
     setDepartment('');
     setLocation('');
-    setEnabled(true);
   };
 
   const handleDismiss = () => {
@@ -71,7 +69,6 @@ export function AddDeviceModal({
       displayName: trimmedName,
       host: trimmedHost,
       protocol: useHttps ? 'https' : 'http',
-      enabled,
       ...(portNum !== undefined ? { port: portNum } : {}),
       ...(organization.trim() ? { organization: organization.trim() } : {}),
       ...(department.trim() ? { department: department.trim() } : {}),
@@ -149,11 +146,6 @@ export function AddDeviceModal({
         <FormField>
           <Label>Location (optional)</Label>
           <TextInput value={location} onChange={setLocation} />
-        </FormField>
-
-        <FormField>
-          <Label>Enabled</Label>
-          <Switch value={enabled} onChange={setEnabled} />
         </FormField>
 
         {error ? <Text>Could not add device: {error}</Text> : null}

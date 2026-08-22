@@ -10,7 +10,7 @@ The Dynatrace UFO is an open-source Wi-Fi ambient information radiator: two ring
 
 ## Features
 
-- **Fleet management** — Register, list, enable/disable, and remove UFO devices. Each device is stored as a Dynatrace app-settings object (`ufo-device` schema) with a display name, host, protocol, and optional port.
+- **Fleet management** — Register, list, and remove UFO devices. Each card shows a **live connection status** and an **LED preview** that mirrors the pattern last pushed to that UFO. Devices are stored as Dynatrace app-settings objects (`ufo-device` schema) with a display name, host, protocol, and optional port.
 - **Quick pattern tests** — Pick a visually distinct smoke-test pattern (Green whirl, Red alert, Blue spin, Rainbow, Off) from a device card and apply it to confirm the link end-to-end.
 - **"Send to UFO" workflow action** — A Dynatrace Workflow action that drives any registered UFO from automation: pick a device, then set each ring's colour, spin direction, speed, and lit-LED count, plus the logo colour.
 - **Two delivery transports** — A browser beacon for devices on your own network, and an EdgeConnect-backed server-side proxy that can reach private-network devices and confirm delivery.
@@ -64,7 +64,6 @@ Add devices from the app UI (**Add device**), or directly as `ufo-device` app-se
 | `host` | Bare hostname or IP — no scheme, no path (e.g. `ufo.local`) |
 | `protocol` | `http` or `https` |
 | `port` | Optional; defaults to 80 / 443 |
-| `enabled` | Disabled devices are shown but never receive renders |
 
 ### Reaching devices on a private network (EdgeConnect)
 
