@@ -1,0 +1,10 @@
+UFO Studio
+Copyright 2026 the UFO Studio authors
+
+This product includes software developed as an open source project.
+Licensed under the Apache License, Version 2.0 (see the LICENSE file).
+
+UFO Studio drives the open source Dynatrace UFO device
+(https://github.com/Dynatrace/ufo). "Dynatrace" is a trademark of
+Dynatrace LLC; this project is an independent, community-maintained app and
+is not an officially supported Dynatrace product.
