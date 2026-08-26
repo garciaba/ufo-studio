@@ -42,9 +42,9 @@
       <stop offset="1" stop-color="#E3DEFF" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <!-- Scaled down and re-centered so the glyph sits inset within the 64x64 canvas (breathing
-       room to match other app icons in the header), instead of nearly touching the edges. -->
-  <g transform="translate(32 32) scale(0.78) translate(-32 -32)">
+  <!-- Centered and inset to ~12.5% margins so the glyph renders padded (not edge-to-edge) in
+       the 20x20 header slot, matching the framing of the platform's built-in app icons. -->
+  <g transform="translate(32 32) scale(0.89) translate(-32 -32)">
     <!-- ambient shadow beneath the hovering disc (key light is upper-right) -->
     <ellipse cx="30.8" cy="49.1" rx="17.2" ry="2.4" fill="url(#uHover)"/>
 

@@ -35,8 +35,8 @@ interface DtUfoInput {
   logoColor?: string;
 }
 
-const DEFAULT_RING_COLOR = '#1496ff';
-const DEFAULT_LOGO_COLOR = '#ffffff';
+const DEFAULT_RING_COLOR = '#000000';
+const DEFAULT_LOGO_COLOR = '#000000';
 const DEFAULT_DIRECTION: RingDirection = 'right';
 const DEFAULT_SPEED = 5;
 const DEFAULT_LED_COUNT = 5;
@@ -232,7 +232,7 @@ const DtUfoWidget: ActionWidget<DtUfoInput> = (props) => {
     setActiveAction('clean');
     setTestState({ status: 'testing' });
     try {
-      // Send the same "Off" pattern as the app's quick-test: every LED to the dim idle colour.
+      // Send the same "Off" pattern as the app's quick-test: every LED fully off (RGB 000).
       const result = await deliver(value.connectionId, encodePattern(OFF_PATTERN));
       setTestState(
         result.ok

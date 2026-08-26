@@ -244,12 +244,12 @@ function UfoCard({
             color={
               status === 'connected' ? 'success' : status === 'disconnected' ? 'critical' : 'neutral'
             }
-            variant="accent"
+            variant={status === 'disconnected' ? 'emphasized' : 'accent'}
           >
             {status === 'connected'
               ? 'Connected'
               : status === 'disconnected'
-                ? 'Not Connected'
+                ? 'Error'
                 : 'Checking…'}
           </Chip>
         </Flex>
@@ -486,12 +486,16 @@ export function FleetList() {
 
       {notice ? (
         <MessageContainer variant={noticeVariant(notice.tone)} onDismiss={() => setNotice(null)}>
-          {notice.message}
+          <MessageContainer.Prefix />
+          <MessageContainer.Description>{notice.message}</MessageContainer.Description>
         </MessageContainer>
       ) : null}
 
       {error ? (
-        <MessageContainer variant="critical">Could not load devices: {error.message}</MessageContainer>
+        <MessageContainer variant="critical">
+          <MessageContainer.Prefix />
+          <MessageContainer.Description>Could not load devices: {error.message}</MessageContainer.Description>
+        </MessageContainer>
       ) : null}
 
       {isLoading ? (

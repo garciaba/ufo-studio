@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { palette } from '../../lib/ufo/palette';
 import { RING_LED_COUNT } from '../../lib/ufo/pattern';
 import type { LogoState, Pattern, RingState } from '../../lib/ufo/pattern';
 
@@ -10,8 +9,8 @@ import type { LogoState, Pattern, RingState } from '../../lib/ufo/pattern';
  * icon mirrors the last pattern *this app applied*, not any externally-set state.
  */
 
-/** RRGGBB (no '#') fallback used for "off" LEDs and unknown colours; matches the device idle tone. */
-const OFF = palette.idle;
+/** RRGGBB (no '#') shown for "off"/idle LEDs so an unlit UFO reads as a neutral grey glyph, not a black disc. */
+const OFF = '9aa4b0';
 const HEX6 = /^[0-9a-fA-F]{6}$/;
 
 /** Dark backing/separator colour so the rings read as concentric bands, not one solid disc. */
@@ -86,7 +85,7 @@ function useSpinKeyframes(): void {
 }
 
 export type UfoLedIconProps = {
-  /** The pattern to mirror. When omitted, the icon shows a dark "off" glyph. */
+  /** The pattern to mirror. When omitted, the icon shows a neutral grey "off" glyph. */
   readonly pattern?: Pattern;
   /** Outer diameter in pixels. */
   readonly size?: number;
@@ -115,8 +114,8 @@ export function UfoLedIcon({ pattern, size = 44, dimmed = false }: UfoLedIconPro
         borderRadius: '50%',
         background: BACKING,
         boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.10), 0 1px 3px rgba(0,0,0,0.45)',
-        opacity: dimmed ? 0.4 : 1,
-        filter: dimmed ? 'grayscale(0.7)' : 'none',
+        opacity: dimmed ? 0.5 : 1,
+        filter: dimmed ? 'grayscale(1) brightness(0.8)' : 'none',
         transition: 'opacity 150ms ease, filter 150ms ease',
       }}
     >

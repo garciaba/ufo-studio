@@ -3,10 +3,11 @@ import { appSettingsObjectsClient } from '@dynatrace-sdk/client-app-settings-v2'
 import { buildCommandPattern, type RingDirection, type RingCommand } from '../lib/ufo/command';
 import { encodePattern } from '../lib/ufo/encode';
 
-// Sensible fallbacks so a freshly-added action (device picked, rings untouched)
-// still delivers something visible. These mirror the widget's display defaults.
-const DEFAULT_RING_COLOR = '#1496ff';
-const DEFAULT_LOGO_COLOR = '#ffffff';
+// Fallbacks for a freshly-added action (device picked, colours untouched): default to
+// fully off (RGB 000) so an unconfigured "clean" run darkens the UFO. These mirror the
+// widget's display defaults.
+const DEFAULT_RING_COLOR = '#000000';
+const DEFAULT_LOGO_COLOR = '#000000';
 const DEFAULT_SPEED = 5;
 const DEFAULT_LED_COUNT = 5;
 
