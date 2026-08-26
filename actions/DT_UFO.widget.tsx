@@ -3,7 +3,9 @@ import { FormField, Label, Radio, RadioGroup } from '@dynatrace/strato-component
 import { Button } from '@dynatrace/strato-components/buttons';
 import { Flex } from '@dynatrace/strato-components/layouts';
 import { Heading, Text } from '@dynatrace/strato-components/typography';
+import { PlusIcon } from '@dynatrace/strato-icons';
 import type { ActionWidget } from '@dynatrace-sdk/automation-action-utils';
+import { getAppId, getEnvironmentUrl } from '@dynatrace-sdk/app-environment';
 import { functions } from '@dynatrace-sdk/app-utils';
 import { appSettingsObjectsClient } from '@dynatrace-sdk/client-app-settings-v2';
 import React, { useState } from 'react';
@@ -13,6 +15,7 @@ import {
   type RingDirection,
   type UfoCommand,
 } from '../lib/ufo/command';
+import { buildAddDeviceUrl } from '../lib/ufo/deepLinks';
 import { encodePattern } from '../lib/ufo/encode';
 import { OFF_PATTERN } from '../lib/ufo/palette';
 import { RING_LED_COUNT } from '../lib/ufo/pattern';
@@ -251,9 +254,26 @@ const DtUfoWidget: ActionWidget<DtUfoInput> = (props) => {
         <AutomationConnectionPicker
           connectionId={value.connectionId}
           schema="ufo-device"
+          hideEditConnectionButton
+          hideAddConnectionButton
           onChange={(connectionId) => updateValue({ connectionId })}
         />
       </FormField>
+
+      <Flex>
+        <Button
+          onClick={() => {
+            // Opens the app's own Fleet screen with its Add UFO device modal, rather than the
+            // connection picker's default (a raw, generic settings-object editor page).
+            window.open(buildAddDeviceUrl(getEnvironmentUrl(), getAppId()), '_blank')?.focus();
+          }}
+        >
+          <Button.Prefix>
+            <PlusIcon />
+          </Button.Prefix>
+          Add a new UFO
+        </Button>
+      </Flex>
 
       <RingSection
         title="Top ring"

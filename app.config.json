@@ -3,7 +3,7 @@
   "environmentUrl": "https://bnk46244.apps.dynatrace.com/",
   "app": {
     "name": "UFO Studio",
-    "version": "0.0.19",
+    "version": "0.0.20",
     "description": "Register and drive the Dynatrace UFOs on your network.",
     "id": "my.ufo",
     "icon": "icon.svg",

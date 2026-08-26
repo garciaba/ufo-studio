@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Divider, Flex, Grid, Surface } from '@dynatrace/strato-components/layouts';
 import { Button } from '@dynatrace/strato-components/buttons';
 import { FormField, Label, Select } from '@dynatrace/strato-components/forms';
@@ -9,6 +9,7 @@ import {
   useCreateSettingsV2,
   useDeleteSettingsV2,
 } from '@dynatrace-sdk/react-hooks';
+import { ADD_DEVICE_QUERY_PARAM } from '../../lib/ufo/deepLinks';
 import { OFF_PATTERN, palette } from '../../lib/ufo/palette';
 import type { Pattern } from '../../lib/ufo/pattern';
 import type { RenderOutcome, UfoDevice, UfoTransportKind } from '../../transport/types';
@@ -327,6 +328,14 @@ function UfoCard({
   );
 }
 
+/** Whether the app was opened via the workflow action's "Add a new UFO" deep link. */
+function wasOpenedForAddDevice(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get(ADD_DEVICE_QUERY_PARAM) === '1'
+  );
+}
+
 export function FleetList() {
   const { data, isLoading, error, refetch } = useSettingsObjectsV2({
     schemaId: SCHEMA_ID,
@@ -335,13 +344,20 @@ export function FleetList() {
   const createSettings = useCreateSettingsV2();
   const deleteSettings = useDeleteSettingsV2();
 
-  const [showAdd, setShowAdd] = useState(false);
+  const [showAdd, setShowAdd] = useState(wasOpenedForAddDevice);
   const [addError, setAddError] = useState<string | undefined>(undefined);
   const [addSubmitting, setAddSubmitting] = useState(false);
   const [busyDeviceId, setBusyDeviceId] = useState<string | null>(null);
   const [notice, setNotice] = useState<ActionNotice | null>(null);
   // Last pattern this app pushed to each device, keyed by deviceId — drives the card LED glyph.
   const [appliedById, setAppliedById] = useState<Record<string, Pattern>>({});
+
+  // Drop the deep-link query param once consumed, so a later reload doesn't reopen the modal.
+  useEffect(() => {
+    if (wasOpenedForAddDevice()) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, []);
 
   const rows = useMemo<DeviceRow[]>(() => {
     const items = data?.items ?? [];

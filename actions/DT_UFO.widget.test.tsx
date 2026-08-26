@@ -29,15 +29,19 @@ jest.mock('@dynatrace/strato-components/forms', () => {
 
 jest.mock('@dynatrace/strato-components/buttons', () => {
   const react = jest.requireActual('react') as typeof import('react');
-  return {
-    Button: (props: any) =>
+  const Button = Object.assign(
+    (props: any) =>
       react.createElement(
         'button',
         { type: 'button', onClick: props.onClick, disabled: props.disabled },
         props.children,
       ),
-  };
+    { Prefix: (props: any) => react.createElement('span', null, props.children) },
+  );
+  return { Button };
 });
+
+jest.mock('@dynatrace/strato-icons', () => ({ PlusIcon: () => null }));
 
 jest.mock('@dynatrace/strato-components/layouts', () => {
   const react = jest.requireActual('react') as typeof import('react');
@@ -54,6 +58,11 @@ jest.mock('@dynatrace/strato-components/typography', () => {
 
 jest.mock('@dynatrace-sdk/app-utils', () => ({
   functions: { call: jest.fn() },
+}));
+
+jest.mock('@dynatrace-sdk/app-environment', () => ({
+  getAppId: () => 'my.ufo',
+  getEnvironmentUrl: () => 'https://example.apps.dynatrace.com/',
 }));
 
 jest.mock('@dynatrace-sdk/client-app-settings-v2', () => ({
@@ -75,6 +84,20 @@ describe('DtUfoWidget', () => {
     expect(screen.getByText('Bottom ring')).toBeTruthy();
     expect(screen.getByText('Logo')).toBeTruthy();
     expect(screen.getByText('Test on UFO')).toBeTruthy();
+    expect(screen.getByText('Add a new UFO')).toBeTruthy();
+  });
+
+  it('opens the app\'s Add UFO device modal when Add a new UFO is clicked', () => {
+    const openSpy = jest.spyOn(window, 'open').mockReturnValue({ focus: jest.fn() } as unknown as Window);
+
+    render(<DtUfoWidget value={{ connectionId: 'ufo-1' }} onValueChanged={jest.fn()} />);
+    fireEvent.click(screen.getByText('Add a new UFO'));
+
+    expect(openSpy).toHaveBeenCalledWith(
+      'https://example.apps.dynatrace.com/ui/apps/my.ufo?addDevice=1',
+      '_blank',
+    );
+    openSpy.mockRestore();
   });
 
   it('sends the configured pattern to ufo-render when Test is clicked', async () => {
