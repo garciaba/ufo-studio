@@ -1,0 +1,51 @@
+# Continuous integration: lint, type-check, unit tests, and build.
+# Least-privilege token: read-only access to repository contents.
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Lint, type-check, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check core
+        run: npm run typecheck:lib
+
+      - name: Type-check UI
+        run: npx tsc -p ui/tsconfig.json
+
+      - name: Unit tests (lib)
+        run: npm run test:lib
+
+      - name: Action tests
+        run: npm run test:actions
+
+      - name: Widget tests
+        run: npm run test:widgets
+
+      # dt-app build produces the app bundle locally; it does not deploy.
+      - name: Build
+        run: npm run build

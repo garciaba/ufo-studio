@@ -1,6 +1,6 @@
 {
   "$schema": "./.dt-app/app.config.schema.json",
-  "environmentUrl": "https://bnk46244.apps.dynatrace.com/",
+  "environmentUrl": "https://your-environment-id.apps.dynatrace.com/",
   "app": {
     "name": "UFO Studio",
     "version": "0.0.22",

@@ -1,6 +1,6 @@
 {
   "name": "ufo-studio",
-  "version": "0.0.0",
+  "version": "0.0.22",
   "description": "Register and drive physical Dynatrace UFO LED devices from your Dynatrace environment.",
   "scripts": {
     "build": "dt-app build",
@@ -21,8 +21,24 @@
   "engines": {
     "node": ">=16.13.0"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "garciaba",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/garciaba/ufo-studio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/garciaba/ufo-studio/issues"
+  },
+  "homepage": "https://github.com/garciaba/ufo-studio#readme",
+  "keywords": [
+    "dynatrace",
+    "ufo",
+    "dt-app",
+    "appengine",
+    "led",
+    "iot"
+  ],
   "dependencies": {
     "@dynatrace-sdk/app-environment": "^1.1.5",
     "@dynatrace-sdk/app-utils": "1.0.2",
