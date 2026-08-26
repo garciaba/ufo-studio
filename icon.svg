@@ -42,50 +42,54 @@
       <stop offset="1" stop-color="#E3DEFF" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <!-- ambient shadow beneath the hovering disc (key light is upper-right) -->
-  <ellipse cx="30.8" cy="49.1" rx="17.2" ry="2.4" fill="url(#uHover)"/>
+  <!-- Scaled down and re-centered so the glyph sits inset within the 64x64 canvas (breathing
+       room to match other app icons in the header), instead of nearly touching the edges. -->
+  <g transform="translate(32 32) scale(0.78) translate(-32 -32)">
+    <!-- ambient shadow beneath the hovering disc (key light is upper-right) -->
+    <ellipse cx="30.8" cy="49.1" rx="17.2" ry="2.4" fill="url(#uHover)"/>
 
-  <!-- lower hull -->
-  <path d="M5 31.55C5 25.47 17.09 20.55 32 20.55C46.91 20.55 59 25.47 59 31.55C59 40.39 48 47.55 32 47.55C16 47.55 5 40.39 5 31.55Z" fill="url(#uHull)"/>
+    <!-- lower hull -->
+    <path d="M5 31.55C5 25.47 17.09 20.55 32 20.55C46.91 20.55 59 25.47 59 31.55C59 40.39 48 47.55 32 47.55C16 47.55 5 40.39 5 31.55Z" fill="url(#uHull)"/>
 
-  <!-- edge thickness of the disc, read as a crescent along the near rim -->
-  <ellipse cx="32" cy="34.55" rx="26" ry="10.8" fill="url(#uRim)"/>
+    <!-- edge thickness of the disc, read as a crescent along the near rim -->
+    <ellipse cx="32" cy="34.55" rx="26" ry="10.8" fill="url(#uRim)"/>
 
-  <!-- top deck -->
-  <ellipse cx="32" cy="31.55" rx="27" ry="11" fill="url(#uDeck)"/>
+    <!-- top deck -->
+    <ellipse cx="32" cy="31.55" rx="27" ry="11" fill="url(#uDeck)"/>
 
-  <!-- occlusion where the dome meets the deck, thrown lower-left -->
-  <ellipse cx="30.9" cy="33.1" rx="15.2" ry="5.5" fill="url(#uDeckAO)"/>
+    <!-- occlusion where the dome meets the deck, thrown lower-left -->
+    <ellipse cx="30.9" cy="33.1" rx="15.2" ry="5.5" fill="url(#uDeckAO)"/>
 
-  <!-- LED ring -->
-  <g>
-    <ellipse cx="52.28" cy="33.76" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.69"/>
-    <ellipse cx="46.85" cy="37.6" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.72"/>
-    <ellipse cx="37.44" cy="39.81" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.72"/>
-    <ellipse cx="26.56" cy="39.81" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.70"/>
-    <ellipse cx="17.15" cy="37.6" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.66"/>
-    <ellipse cx="11.72" cy="33.76" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.62"/>
-    <ellipse cx="11.72" cy="29.34" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.58"/>
-    <ellipse cx="17.15" cy="25.5" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.56"/>
-    <ellipse cx="46.85" cy="25.5" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.60"/>
-    <ellipse cx="52.28" cy="29.34" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.63"/>
+    <!-- LED ring -->
+    <g>
+      <ellipse cx="52.28" cy="33.76" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.69"/>
+      <ellipse cx="46.85" cy="37.6" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.72"/>
+      <ellipse cx="37.44" cy="39.81" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.72"/>
+      <ellipse cx="26.56" cy="39.81" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.70"/>
+      <ellipse cx="17.15" cy="37.6" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.66"/>
+      <ellipse cx="11.72" cy="33.76" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.62"/>
+      <ellipse cx="11.72" cy="29.34" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.58"/>
+      <ellipse cx="17.15" cy="25.5" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.56"/>
+      <ellipse cx="46.85" cy="25.5" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.60"/>
+      <ellipse cx="52.28" cy="29.34" rx="2.63" ry="2.19" fill="url(#uLedGlow)" opacity="0.63"/>
+    </g>
+    <g>
+      <ellipse cx="52.28" cy="33.76" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.96"/>
+      <ellipse cx="46.85" cy="37.6" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="1.00"/>
+      <ellipse cx="37.44" cy="39.81" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="1.00"/>
+      <ellipse cx="26.56" cy="39.81" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.97"/>
+      <ellipse cx="17.15" cy="37.6" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.92"/>
+      <ellipse cx="11.72" cy="33.76" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.86"/>
+      <ellipse cx="11.72" cy="29.34" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.80"/>
+      <ellipse cx="17.15" cy="25.5" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.78"/>
+      <ellipse cx="46.85" cy="25.5" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.84"/>
+      <ellipse cx="52.28" cy="29.34" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.88"/>
+    </g>
+
+    <!-- contact seam so the dome reads as seated on the deck -->
+    <ellipse cx="32" cy="29.55" rx="12.3" ry="5.34" fill="url(#uDomeSeam)"/>
+
+    <!-- dome -->
+    <path d="M20.6 29.05C20.6 21.8 25.45 16.45 32 16.45C38.55 16.45 43.4 21.8 43.4 29.05C43.4 31.61 38.3 33.69 32 33.69C25.7 33.69 20.6 31.61 20.6 29.05Z" fill="url(#uDome)"/>
   </g>
-  <g>
-    <ellipse cx="52.28" cy="33.76" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.96"/>
-    <ellipse cx="46.85" cy="37.6" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="1.00"/>
-    <ellipse cx="37.44" cy="39.81" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="1.00"/>
-    <ellipse cx="26.56" cy="39.81" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.97"/>
-    <ellipse cx="17.15" cy="37.6" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.92"/>
-    <ellipse cx="11.72" cy="33.76" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.86"/>
-    <ellipse cx="11.72" cy="29.34" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.80"/>
-    <ellipse cx="17.15" cy="25.5" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.78"/>
-    <ellipse cx="46.85" cy="25.5" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.84"/>
-    <ellipse cx="52.28" cy="29.34" rx="1.35" ry="1.13" fill="#F6F3FF" opacity="0.88"/>
-  </g>
-
-  <!-- contact seam so the dome reads as seated on the deck -->
-  <ellipse cx="32" cy="29.55" rx="12.3" ry="5.34" fill="url(#uDomeSeam)"/>
-
-  <!-- dome -->
-  <path d="M20.6 29.05C20.6 21.8 25.45 16.45 32 16.45C38.55 16.45 43.4 21.8 43.4 29.05C43.4 31.61 38.3 33.69 32 33.69C25.7 33.69 20.6 31.61 20.6 29.05Z" fill="url(#uDome)"/>
 </svg>
